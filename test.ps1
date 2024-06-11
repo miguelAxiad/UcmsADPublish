@@ -1,3 +1,5 @@
+#test example
+
 Import-Module '.\AxiadCloud-ADPublishHelper.psm1'
 
 Connect-AxiadCloud -TenantName 'tenant' -Platform 'demo' -BearerToken (Get-Content '.\Demotoken.txt')
