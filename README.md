@@ -1,4 +1,3 @@
-
 Certificate Publishing to AD: Automation in PowerShell using UCMS v2 API
 
 This automation script uses the UCMS v2 REST API. It relies on the credential methods to obtain credentials that expire within a time range and to obtain the value of the associated certificates, which can then be imported into AD. The UCMS REST API methods we use are:
