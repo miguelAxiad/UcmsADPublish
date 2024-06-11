@@ -11,19 +11,27 @@ In UCMS API a credential object can contain several certificates (type of X509) 
 ![CredentialDiagram](https://github.com/GHmiguel/UcmsADPublish/assets/35546222/56d06da7-c86c-4b06-948d-8a041625b126)
 
 The CredentialCertificate object contains the Identifier that can be used to retrieve a certificate object that contains the value of the certificate in PEM format. This means that the automation has to make a first call to GET /api/v2/credentials with a start date and end date to find the relevant credentials, and then make a second call to GET /api/v2/credentials/{type}/{credential_uid} to get the details about each relevant credential, so that only the ones that correspond to PIV authentication certificates are considered for publication to AD. 
+
 The REST method GET /api/v2/credentials is called with start and end date parameters, and it provides an array of credentials that expire within the specified time period. As mentioned in item 1 above, we can use this to find certificates that were created in a specific time range as follows. 
 
  ![CreationValidityScript](https://github.com/GHmiguel/UcmsADPublish/assets/35546222/a6316d8e-7f80-4dd4-8260-abf566c04194)
 
 
 In the diagram above, the automation script is executed at times T1, T2, with a given frequency (Script Frequency). Certificates created between T1 and T2 will expire in a time between T1’ and T2’. The certificate validity is a fixed period (Certificate Validity, in the diagram). Therefore, dates used for the call to GET /api/v2/credentials  with start date and end date parameters, give us these values:
+
 startDate = T1’ = T2 + (Certificate Validity) – (Script Frequency)
 endDate = T2’ = T2 + (Certificate Validity)
+
 The condition that must be satisfied for the relevant certificates is that they are created between successive executions of the automation script. This is the period between T1 and T2 in the diagram above. Hence, we can establish the following condition:
+
 T2 – (Script Frequency) < (Creation Date) ≤ T2
+
 This condition applies to an execution of the automation script at time T2.
+
 The automation is written in PowerShell 7 using VSCode, and is organized as a PowerShel module called AxiadCloud-ADPublishHelper.psm1, with manifest file AxiadCloud-ADPublishHelper.psd1.
+
 The module exports the following functions:
+
 1.	Connect-AxiadCloud: Caches your session information (Tenant Name, Platform and Bearer Token) for use with the Axiad Cloud commands. Must be ran first before any of the other Axiad Cloud commands. It requires the following parameters: Tenant, Platform and BearerToken. Example:
 
 Connect-AxiadCloud -TenantName ‘tenant’ -Platform 'demo' -BearerToken (Get-Content '.\Demotoken.txt')
