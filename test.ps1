@@ -1,6 +1,6 @@
 Import-Module '.\AxiadCloud-ADPublishHelper.psm1'
 
-Connect-AxiadCloud -TenantName 'amtrak' -Platform 'demo' -BearerToken (Get-Content '.\AmtrakDemotoken.txt')
+Connect-AxiadCloud -TenantName 'tenant' -Platform 'demo' -BearerToken (Get-Content '.\Demotoken.txt')
 
 $certs=Get-AxiadCertificatesToPublish -ScriptFrequency 10080 -CertificateValidity 730 -UserGroup 'Default Group_LOCAL'
 
