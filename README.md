@@ -19,6 +19,7 @@ The REST method GET /api/v2/credentials is called with start and end date parame
 In the diagram above, the automation script is executed at times T1, T2, with a given frequency (Script Frequency). Certificates created between T1 and T2 will expire in a time between T1’ and T2’. The certificate validity is a fixed period (Certificate Validity, in the diagram). Therefore, dates used for the call to GET /api/v2/credentials  with start date and end date parameters, give us these values:
 
 startDate = T1’ = T2 + (Certificate Validity) – (Script Frequency)
+
 endDate = T2’ = T2 + (Certificate Validity)
 
 The condition that must be satisfied for the relevant certificates is that they are created between successive executions of the automation script. This is the period between T1 and T2 in the diagram above. Hence, we can establish the following condition:
