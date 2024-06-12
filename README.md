@@ -42,6 +42,7 @@ Connect-AxiadCloud -TenantName ‘tenant’ -Platform 'demo' -BearerToken (Get-C
 $certs=Get-AxiadCertificatesToPublish -ScriptFrequency 120 -CertificateValidity 180 -UserGroup 'Default Group_LOCAL'
 
 4.	GetUserUPNfromCertificate: Obtains the UPN from the SAN extension in the input certificate, useful for importing the certificate in AD. Requires an X509 certificate object as input parameter and returns the certificate holder UPN as a string. Example: 
+
 $upn = GetUserUPNfromCertificate -Certificate $cert
 
 Here’s an example of how the module can be used in an automation script:
