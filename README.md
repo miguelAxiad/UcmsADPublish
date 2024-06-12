@@ -1,4 +1,4 @@
-#Certificate Publishing to AD: Automation in PowerShell using UCMS v2 API
+# Certificate Publishing to AD: Automation in PowerShell using UCMS v2 API
 
 This automation script uses the UCMS v2 REST API. It relies on the credential methods to obtain credentials that expire within a time range and to obtain the value of the associated certificates, which can then be imported into AD. The UCMS REST API methods we use are:
 1.	`GET /api/v2/credentials` : is called with parameters starDate and endDate that define the expiration date range. Given that we know the certificate validity period, we can use this to find credentials that correspond to certificates that were created in a specific time range.
@@ -47,7 +47,8 @@ The module exports the following functions:
 
 Here’s an example of how the module can be used in an automation script:
 
-`Import-Module '.\AxiadCloud-ADPublishHelper.psm1'
+```
+Import-Module '.\AxiadCloud-ADPublishHelper.psm1'
 
 Connect-AxiadCloud -TenantName ‘tenant’ -Platform 'demo' -BearerToken (Get-Content '.\Demotoken.txt')
 
@@ -64,7 +65,7 @@ foreach ($cert in $certs) {
 } 
 }
 
-Disconnect-AxiadCloud`
-
+Disconnect-AxiadCloud
+```
 
 
