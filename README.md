@@ -46,6 +46,7 @@ $certs=Get-AxiadCertificatesToPublish -ScriptFrequency 120 -CertificateValidity 
 $upn = GetUserUPNfromCertificate -Certificate $cert
 
 Here’s an example of how the module can be used in an automation script:
+
 Import-Module '.\AxiadCloud-ADPublishHelper.psm1'
 
 Connect-AxiadCloud -TenantName ‘tenant’ -Platform 'demo' -BearerToken (Get-Content '.\Demotoken.txt')
