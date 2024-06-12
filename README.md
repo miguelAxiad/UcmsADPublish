@@ -9,7 +9,7 @@ In UCMS API a credential object can contain several certificates (type of X509) 
  
 ![CredentialDiagram](https://github.com/GHmiguel/UcmsADPublish/assets/35546222/56d06da7-c86c-4b06-948d-8a041625b126)
 
-The CredentialCertificate object contains the Identifier that can be used to retrieve a certificate object that contains the value of the certificate in PEM format. This means that the automation has to make a first call to GET /api/v2/credentials with a start date and end date to find the relevant credentials, and then make a second call to `GET /api/v2/credentials/{type}/{credential_uid}` to get the details about each relevant credential, so that only the ones that correspond to PIV authentication certificates are considered for publication to AD. 
+The CredentialCertificate object contains the Identifier that can be used to retrieve a certificate object that contains the value of the certificate in PEM format. This means that the automation has to make a first call to `GET /api/v2/credentials` with a start date and end date to find the relevant credentials, and then make a second call to `GET /api/v2/credentials/{type}/{credential_uid}` to get the details about each relevant credential, so that only the ones that correspond to PIV authentication certificates are considered for publication to AD. 
 
 The REST method `GET /api/v2/credentials` is called with start and end date parameters, and it provides an array of credentials that expire within the specified time period. As mentioned in item 1 above, we can use this to find certificates that were created in a specific time range as follows. 
 
