@@ -41,7 +41,12 @@ The module exports the following functions:
 
 `$certs=Get-AxiadCertificatesToPublish -ScriptFrequency 120 -CertificateValidity 180 -UserGroup 'Default Group_LOCAL'`
 
-4.	**GetUserUPNfromCertificate**: Obtains the UPN from the SAN extension in the input certificate, useful for importing the certificate in AD. Requires an X509 certificate object as input parameter and returns the certificate holder UPN as a string. Example: 
+4.	**Get-AllAxiadActiveCertificates**: Obtains all Axiad active certificates to be published in AD from Axiad Cloud. Retrieves an array of X509Certificate2 objects corresponding to the certificates to be published in AD.  It requires the following parameters:  CertificateValidity (in days), and UserGroup (name of the user group in scope). Returns an array of X509 certificate objects.  Example: 
+
+$certs=Get-AllAxiadActiveCertificates -CertificateValidity 180 -UserGroup ‘Axiad CMS Users'
+
+
+5.	**GetUserUPNfromCertificate**: Obtains the UPN from the SAN extension in the input certificate, useful for importing the certificate in AD. Requires an X509 certificate object as input parameter and returns the certificate holder UPN as a string. Example: 
 
 `$upn = GetUserUPNfromCertificate -Certificate $cert`
 
