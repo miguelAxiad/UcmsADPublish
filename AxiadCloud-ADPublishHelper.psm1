@@ -126,7 +126,12 @@ function Get-AxiadCertificatesToPublish {
     {
         $CredentialObject = ParseAxiadCredential -AxiadC $Credential
         #Filter by groupName
-        $GroupName = $CredentialObject.groupName
+        if ($UserGroup) 
+            {
+                $GroupName = $CredentialObject.groupName #use this ifthe group is SCIM
+                # $GroupName = ($CredentialObject.groupName -split "," | ConvertFrom-StringData).CN    #use this if group is LDAP/AD
+            }
+
         foreach ($Certificate in $CredentialObject.certificates)
         {
             $CertificateObject = ParseAxiadCredentialCertificate -CreCertificate $Certificate
@@ -139,6 +144,68 @@ function Get-AxiadCertificatesToPublish {
                 $creationDate = ConvertFromUnixTimeInMilliseconds -UnixTime $Certificate.created 
                 if ($creationDate -gt $CurrentDate.AddMinutes(-$ScriptFrequency) -and
                     $creationDate -le $CurrentDate)
+                {
+                    $DERcertificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::CreateFromPem($Certificate.value)
+                    $Results += $DERcertificate 
+                }
+            }
+        }
+    }
+    return $Results
+}
+
+
+
+function Get-AllAxiadActiveCertificates {
+    <#
+    .SYNOPSIS
+    Obtains all Active certificates to be published in AD from Axiad Cloud
+    .DESCRIPTION
+    Retrieves an array of X509Certificate2 objects corresponding to the certificates to be published in AD.
+
+    .PARAMETER CertificateValidity
+    Validity period for the certificates in days
+    .PARAMETER UserGroup
+    User Group of interest, default value: Default Group_LOCAL
+    #>
+    [OutputType('System.Security.Cryptography.X509Certificates.X509Certificate2[]')]
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true, Position=1)]
+        $CertificateValidity,
+
+        [Parameter(Mandatory = $true, Position=2)]
+        $UserGroup
+    )
+    $Results = @()
+    $GroupName = 'Default Group_LOCAL'
+    $CurrentDate = Get-Date
+    $StartDate = $CurrentDate
+    $EndDate = $StartDate.AddDays($CertificateValidity)
+    $Credentials = Get-AxiadCredentials -StartDate $StartDate -EndDate $EndDate
+    if (!$Credentials) 
+    {
+        Write-Warning 'No credentials found in the specified expiry period'
+    }
+    foreach ($Credential in $Credentials)
+    {
+        $CredentialObject = ParseAxiadCredential -AxiadC $Credential
+        
+        #Filter by groupName
+        $GroupName = $CredentialObject.groupName #use this ifthe group is SCIM
+        # $GroupName = ($CredentialObject.groupName -split "," | ConvertFrom-StringData).CN    #use this if group is LDAP/AD
+        
+        foreach ($Certificate in $CredentialObject.certificates)
+        {
+            $CertificateObject = ParseAxiadCredentialCertificate -CreCertificate $Certificate
+            if ($CertificateObject.status -eq 'ACTIVE' -and 
+                $CertificateObject.certificateType -eq 'X509'-and 
+                $CertificateObject.certificateContainerName -eq 'CERTIFICATE_PIV_AUTHENTICATION' -and 
+                $GroupName -eq $UserGroup)
+            {
+                $Certificate = Get-AxiadCerticate -ID $CertificateObject.identifier
+                $creationDate = ConvertFromUnixTimeInMilliseconds -UnixTime $Certificate.created 
+                if ($creationDate -le $CurrentDate)
                 {
                     $DERcertificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::CreateFromPem($Certificate.value)
                     $Results += $DERcertificate 
@@ -213,4 +280,4 @@ function Disconnect-AxiadCloud {
     }
 }
 
-Export-ModuleMember -Function 'Get-AxiadCertificatesToPublish', 'Connect-AxiadCloud', 'Disconnect-AxiadCloud', 'GetUserUPNfromCertificate'
+Export-ModuleMember -Function 'Get-AxiadCertificatesToPublish', 'Connect-AxiadCloud', 'Disconnect-AxiadCloud', 'GetUserUPNfromCertificate', 'Get-AllAxiadActiveCertificates'
